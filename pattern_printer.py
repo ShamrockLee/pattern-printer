@@ -1,20 +1,30 @@
 class Paper:
-    is_editing_list = False
-    auto_clean_blank = True
     blank_char = " "
     line_sep_char = "\n"
     end_with_sep = False
     initial_position = [1, 1]
+    is_editing_list = False
+    auto_clean_blank = True
+    use_default_settings = True
     paperdict = dict()
     paperlist = list()
-    use_old_settings = False
 
-    def __init__(self, old_settings=None):
-        self.paperdict = dict()
-        self.paperlist = list()
-        if old_settings is None:
-            old_settings = self.use_old_settings
-        if not old_settings:
+    def __init__(self,
+                 paperdict = None,
+                 paperlist = None,
+                 default_settings = None,
+                 blank_char = " ",
+                 line_sep_char = "\n",
+                 end_with_sep = False,
+                 initial_position = None,
+                 is_editing_list = False,
+                 auto_clean_blank = True,
+                 use_default_settings = True):
+        self.paperdict = dict() if paperdict is None else paperdict
+        self.paperlist = list() if paperlist is None else paperlist
+        if default_settings is None:
+            default_settings = self.use_default_settings
+        if default_settings:
             self.default()
         # print(self, "initialized")
 
