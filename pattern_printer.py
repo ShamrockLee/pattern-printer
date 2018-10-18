@@ -1,3 +1,4 @@
+from collections import OrderedDict
 class Paper:
     blank_char = " "
     line_sep_char = "\n"
@@ -6,7 +7,7 @@ class Paper:
     is_editing_list = False
     auto_clean_blank = True
     use_default_settings = True
-    paperdict = dict()
+    paperdict = OrderedDict()
     paperlist = list()
 
     def __init__(self,
@@ -20,7 +21,7 @@ class Paper:
                  is_editing_list = False,
                  auto_clean_blank = True,
                  use_default_settings = True):
-        self.paperdict = dict() if paperdict is None else paperdict
+        self.paperdict = OrderedDict() if paperdict is None else paperdict
         self.paperlist = list() if paperlist is None else paperlist
         if default_settings is None:
             default_settings = self.use_default_settings
