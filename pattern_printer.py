@@ -120,23 +120,23 @@ class Paper:
         return strout
 
     # extra functions
-    def listtranslate(self, vector, switchback=False):
-        waslistmode = self.is_editing_list
+    def translate(self, vector, stay_in_list=False):
+        was_editing_list = self.is_editing_list
         self.switchtolist()
         self.paperlist = [
             [[point[0][0]+vector[0], point[0][1]+vector[1]],
              point[1]]
             for point in self.paperlist]
-        if switchback and not waslistmode:
+        if stay_in_list and not was_editing_list:
             self.switchtodict()
 
-    def listtranslated(self, vector, switchback=False):
-        waslistmode = self.is_editing_list
+    def translated(self, vector, stay_in_list=False):
+        was_editing_list = self.is_editing_list
         self.switchtolist()
         self.paperlist = [
             [[point[0][0]+vector[0], point[0][1]+vector[1]], point[1]]
             for point in self.paperlist]
-        if switchback and not waslistmode:
+        if stay_in_list and not was_editing_list:
             self.switchtodict()
         return self
 
@@ -144,6 +144,6 @@ class Paper:
 """
 paper1 = Paper()
 paper1.paperdict[(4, 5)] = "3"
-#paper1.listtranslate([-1, -3])
+#paper1.translate([-1, -3])
 print(paper1.sprint())
 """
