@@ -40,7 +40,7 @@ class Paper:
         self.end_with_sep = False
         self.initial_position = [1, 1]
 
-    def synctodict(self):
+    def sync_to_dict(self):
         self.paperdict.clear()
         for charpoint in self.paperlist:
             self.paperdict[tuple(charpoint[0])] = str(charpoint[1])
@@ -48,29 +48,29 @@ class Paper:
             while self.blank_char in self.paperdict:
                 self.paperdict.pop(self.blank_char)
 
-    def switchtodict(self, nosync=False, force=False):
+    def switch_to_dict(self, nosync=False, force=False):
         if (not nosync) and (self.is_editing_list or force):
-            self.synctodict()
+            self.sync_to_dict()
         self.is_editing_list = False
 
-    def synctolist(self):
+    def sync_to_list(self):
         self.paperlist = [
             [list(key), self.paperdict[key]]
             for key in self.paperdict.keys()]
         self.paperlist.sort()
 
-    def switchtolist(self, nosync=False, force=False):
+    def switch_to_list(self, nosync=False, force=False):
         if (not nosync) and ((not self.is_editing_list) or force):
-            self.synctolist()
+            self.sync_to_list()
         self.is_editing_list = True
 
     def fresh(self):
         if self.is_editing_list:
-            self.switchtodict()
-            self.switchtolist()
+            self.switch_to_dict()
+            self.switch_to_list()
         else:
-            self.switchtolist()
-            self.switchtodict()
+            self.switch_to_list()
+            self.switch_to_dict()
 
     def edge(self, ishorizontal, fmm):
         return fmm(key[ishorizontal] for key in self.paperdict.keys())
@@ -97,7 +97,7 @@ class Paper:
         strout = ""
         position_now = self.initial_position.copy()  # ADDRESS PROBLEM, A MATTER OF SAFTY
         self.fresh()
-        self.switchtodict()
+        self.switch_to_dict()
         if isrightsq:
             minlinelength = self.right()
         for k in self.paperdict.keys():
@@ -122,23 +122,19 @@ class Paper:
     # extra functions
     def translate(self, vector, stay_in_list=False):
         was_editing_list = self.is_editing_list
-        self.switchtolist()
+        self.switch_to_list()
         self.paperlist = [
             [[point[0][0]+vector[0], point[0][1]+vector[1]],
              point[1]]
             for point in self.paperlist]
         if stay_in_list and not was_editing_list:
-            self.switchtodict()
+            self.switch_to_dict()
 
     def translated(self, vector, stay_in_list=False):
-        was_editing_list = self.is_editing_list
-        self.switchtolist()
-        self.paperlist = [
-            [[point[0][0]+vector[0], point[0][1]+vector[1]], point[1]]
-            for point in self.paperlist]
-        if stay_in_list and not was_editing_list:
-            self.switchtodict()
-        return self
+        from copy import deepcopy
+        paperout = deepcopy(self)
+        paperout.translate(vector, stay_in_list=False)
+        return paperout
 
 
 """
