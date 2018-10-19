@@ -64,7 +64,7 @@ class Paper:
             self.sync2list()
         self.is_editing_list = True
 
-    def fresh(self):
+    def refresh(self):
         if self.is_editing_list:
             self.switch2dict()
             self.switch2list()
@@ -97,7 +97,7 @@ class Paper:
         strout = ""
         # ADDRESS PROBLEM, A MATTER OF SAFTY
         position_now = self.initial_position.copy()
-        self.fresh()
+        self.refresh()
         self.switch2dict()
         if fill_right:
             right_min = self.right()
