@@ -87,12 +87,12 @@ class Paper:
     def up(self):
         return self.edge(0, min)
 
-    def sprint(self, fill_right=False, no_change=False, right_min=0):
-        if no_change:
+    def sprint(self, nochange=False, fill_right=False, right_min=0):
+        if nochange:
             from copy import deepcopy
             papertemp = deepcopy(self)
-            return papertemp.sprint(fill_right=fill_right,
-                                    no_change=False,
+            return papertemp.sprint(nochange=False,
+                                    fill_right=fill_right,
                                     right_min=right_min)
         strout = ""
         # ADDRESS PROBLEM, A MATTER OF SAFTY
