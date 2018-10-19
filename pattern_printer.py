@@ -72,8 +72,8 @@ class Paper:
             self.switch_to_list()
             self.switch_to_dict()
 
-    def edge(self, ishorizontal, fmm):
-        return fmm(key[ishorizontal] for key in self.paperdict.keys())
+    def edge(self, horizontal, fmm):
+        return fmm(key[horizontal] for key in self.paperdict.keys())
 
     def right(self):  # used in the square option of sprint
         return self.edge(1, max)
