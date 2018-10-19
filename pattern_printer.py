@@ -10,16 +10,16 @@ class Paper:
     paperlist = list()
 
     def __init__(self,
-                 paperdict = None,
-                 paperlist = None,
-                 default_settings = None,
-                 blank_char = " ",
-                 line_sep_char = "\n",
-                 end_with_sep = False,
-                 initial_position = None,
-                 is_editing_list = False,
-                 auto_clean_blank = True,
-                 use_default_settings = True):
+                 paperdict=None,
+                 paperlist=None,
+                 default_settings=None,
+                 blank_char=" ",
+                 line_sep_char="\n",
+                 end_with_sep=False,
+                 initial_position=None,
+                 is_editing_list=False,
+                 auto_clean_blank=True,
+                 use_default_settings=True):
         self.paperdict = dict() if paperdict is None else paperdict
         self.paperlist = list() if paperlist is None else paperlist
         if default_settings is None:
@@ -95,7 +95,8 @@ class Paper:
                                     no_change=False,
                                     right_min=right_min)
         strout = ""
-        position_now = self.initial_position.copy()  # ADDRESS PROBLEM, A MATTER OF SAFTY
+        # ADDRESS PROBLEM, A MATTER OF SAFTY
+        position_now = self.initial_position.copy()
         self.fresh()
         self.switch_to_dict()
         if fill_right:
