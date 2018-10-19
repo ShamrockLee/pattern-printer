@@ -10,16 +10,16 @@ class Paper:
     paperlist = list()
 
     def __init__(self,
-                 paperdict = None,
-                 paperlist = None,
-                 default_settings = None,
-                 blank_char = " ",
-                 line_sep_char = "\n",
-                 end_with_sep = False,
-                 initial_position = None,
-                 is_editing_list = False,
-                 auto_clean_blank = True,
-                 use_default_settings = True):
+                 paperdict=None,
+                 paperlist=None,
+                 default_settings=None,
+                 blank_char=" ",
+                 line_sep_char="\n",
+                 end_with_sep=False,
+                 initial_position=None,
+                 is_editing_list=False,
+                 auto_clean_blank=True,
+                 use_default_settings=True):
         self.paperdict = dict() if paperdict is None else paperdict
         self.paperlist = list() if paperlist is None else paperlist
         if default_settings is None:
@@ -40,7 +40,7 @@ class Paper:
         self.end_with_sep = False
         self.initial_position = [1, 1]
 
-    def synctodict(self):
+    def sync2dict(self):
         self.paperdict.clear()
         for charpoint in self.paperlist:
             self.paperdict[tuple(charpoint[0])] = str(charpoint[1])
@@ -48,32 +48,32 @@ class Paper:
             while self.blank_char in self.paperdict:
                 self.paperdict.pop(self.blank_char)
 
-    def switchtodict(self, nosync=False, force=False):
+    def switch2dict(self, nosync=False, force=False):
         if (not nosync) and (self.is_editing_list or force):
-            self.synctodict()
+            self.sync2dict()
         self.is_editing_list = False
 
-    def synctolist(self):
+    def sync2list(self):
         self.paperlist = [
             [list(key), self.paperdict[key]]
             for key in self.paperdict.keys()]
         self.paperlist.sort()
 
-    def switchtolist(self, nosync=False, force=False):
+    def switch2list(self, nosync=False, force=False):
         if (not nosync) and ((not self.is_editing_list) or force):
-            self.synctolist()
+            self.sync2list()
         self.is_editing_list = True
 
     def fresh(self):
         if self.is_editing_list:
-            self.switchtodict()
-            self.switchtolist()
+            self.switch2dict()
+            self.switch2list()
         else:
-            self.switchtolist()
-            self.switchtodict()
+            self.switch2list()
+            self.switch2dict()
 
-    def edge(self, ishorizontal, fmm):
-        return fmm(key[ishorizontal] for key in self.paperdict.keys())
+    def edge(self, horizontal, fmm):
+        return fmm(key[horizontal] for key in self.paperdict.keys())
 
     def right(self):  # used in the square option of sprint
         return self.edge(1, max)
@@ -87,26 +87,27 @@ class Paper:
     def up(self):
         return self.edge(0, min)
 
-    def sprint(self, isrightsq=False, nomodify=False, minlinelength=0):
-        if nomodify:
+    def sprint(self, nochange=False, fill_right=False, right_min=0):
+        if nochange:
             from copy import deepcopy
             papertemp = deepcopy(self)
-            return papertemp.sprint(isrightsq=isrightsq,
-                                    nomodify=False,
-                                    minlinelength=minlinelength)
+            return papertemp.sprint(nochange=False,
+                                    fill_right=fill_right,
+                                    right_min=right_min)
         strout = ""
-        position_now = self.initial_position.copy()  # ADDRESS PROBLEM, A MATTER OF SAFTY
+        # ADDRESS PROBLEM, A MATTER OF SAFTY
+        position_now = self.initial_position.copy()
         self.fresh()
-        self.switchtodict()
-        if isrightsq:
-            minlinelength = self.right()
+        self.switch2dict()
+        if fill_right:
+            right_min = self.right()
         for k in self.paperdict.keys():
             if k[0] > position_now[0]:
                 strout += (self.blank_char *
-                           max(minlinelength - position_now[0], 0) +
+                           max(right_min - position_now[0], 0) +
                            self.line_sep_char)
                 position_now[0] += 1
-                strout += ((self.blank_char*minlinelength +
+                strout += ((self.blank_char*right_min +
                             self.line_sep_char) *
                            (k[0]-position_now[0]))
                 position_now = [k[0], self.initial_position[1]]
@@ -120,30 +121,26 @@ class Paper:
         return strout
 
     # extra functions
-    def listtranslate(self, vector, switchback=False):
-        waslistmode = self.is_editing_list
-        self.switchtolist()
+    def translate(self, vector, stay_in_list=False):
+        was_editing_list = self.is_editing_list
+        self.switch2list()
         self.paperlist = [
             [[point[0][0]+vector[0], point[0][1]+vector[1]],
              point[1]]
             for point in self.paperlist]
-        if switchback and not waslistmode:
-            self.switchtodict()
+        if stay_in_list and not was_editing_list:
+            self.switch2dict()
 
-    def listtranslated(self, vector, switchback=False):
-        waslistmode = self.is_editing_list
-        self.switchtolist()
-        self.paperlist = [
-            [[point[0][0]+vector[0], point[0][1]+vector[1]], point[1]]
-            for point in self.paperlist]
-        if switchback and not waslistmode:
-            self.switchtodict()
-        return self
+    def translated(self, vector, stay_in_list=False):
+        from copy import deepcopy
+        paperout = deepcopy(self)
+        paperout.translate(vector, stay_in_list=False)
+        return paperout
 
 
 """
 paper1 = Paper()
 paper1.paperdict[(4, 5)] = "3"
-#paper1.listtranslate([-1, -3])
+#paper1.translate([-1, -3])
 print(paper1.sprint())
 """
