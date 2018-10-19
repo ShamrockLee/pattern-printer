@@ -87,26 +87,26 @@ class Paper:
     def up(self):
         return self.edge(0, min)
 
-    def sprint(self, isrightsq=False, nomodify=False, minlinelength=0):
-        if nomodify:
+    def sprint(self, fill_right=False, no_change=False, right_min=0):
+        if no_change:
             from copy import deepcopy
             papertemp = deepcopy(self)
-            return papertemp.sprint(isrightsq=isrightsq,
-                                    nomodify=False,
-                                    minlinelength=minlinelength)
+            return papertemp.sprint(fill_right=fill_right,
+                                    no_change=False,
+                                    right_min=right_min)
         strout = ""
         position_now = self.initial_position.copy()  # ADDRESS PROBLEM, A MATTER OF SAFTY
         self.fresh()
         self.switch_to_dict()
-        if isrightsq:
-            minlinelength = self.right()
+        if fill_right:
+            right_min = self.right()
         for k in self.paperdict.keys():
             if k[0] > position_now[0]:
                 strout += (self.blank_char *
-                           max(minlinelength - position_now[0], 0) +
+                           max(right_min - position_now[0], 0) +
                            self.line_sep_char)
                 position_now[0] += 1
-                strout += ((self.blank_char*minlinelength +
+                strout += ((self.blank_char*right_min +
                             self.line_sep_char) *
                            (k[0]-position_now[0]))
                 position_now = [k[0], self.initial_position[1]]
