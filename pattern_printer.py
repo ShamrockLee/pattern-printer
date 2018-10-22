@@ -131,11 +131,11 @@ class Paper:
         if stay_in_list and not was_editing_list:
             self.switch2dict()
 
-    def translated(self, vector, stay_in_list=False):
-        from copy import deepcopy
-        paperout = deepcopy(self)
-        paperout.translate(vector, stay_in_list=False)
-        return paperout
+def translated(self, *args, **kwargs):
+    from copy import deepcopy
+    paperout = deepcopy(self)
+    paperout.translate(*args, **kwargs)
+    return paperout
 
 
 """
