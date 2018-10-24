@@ -64,13 +64,15 @@ class Paper:
             self.sync2list()
         self.is_editing_list = True
 
-    def refresh(self):
+    def refresh(self, editing_list = None):
         if self.is_editing_list:
             self.switch2dict()
             self.switch2list()
         else:
             self.switch2list()
             self.switch2dict()
+        if editing_list is not None:
+            self.is_editing_list = editing_list
 
     def edge(self, horizontal, fmm):
         return fmm(key[horizontal] for key in self.paperdict.keys())
@@ -97,11 +99,14 @@ class Paper:
         strout = ""
         # ADDRESS PROBLEM, A MATTER OF SAFTY
         position_now = self.initial_position.copy()
-        self.refresh()
-        self.switch2dict()
+        # self.refresh()
+        # self.switch2dict()
+        self.refresh(editing_list = True)
         if fill_right:
             right_min = self.right()
-        for k in self.paperdict.keys():
+        # for k in self.paperdict.keys():
+        for point in self.paperlist:
+            k, charnow = point
             if k[0] > position_now[0]:
                 strout += (self.blank_char *
                            max(right_min - position_now[0], 0) +
@@ -114,7 +119,8 @@ class Paper:
             if k[0] == position_now[0] and k[1] > position_now[1]:
                 strout += self.blank_char*(k[1]-position_now[1])
                 position_now[1] = k[1]
-            strout += str(self.paperdict[k])
+            # strout += str(self.paperdict[k])
+            strout += str(charnow)
             position_now[1] += 1
         if self.end_with_sep:
             strout += self.line_sep_char

@@ -34,7 +34,7 @@ paperout.paperlist+=translated(xcross(m, char='b'), [0, m*2-2]).paperlist # add 
 paperout.paperlist+=translated(xcross(m, char='c'), [m-1, m*2-2]).paperlist # add the 3rd X
 paperout.paperlist+=translated(xcross(m*2-1, char='d'), [0, m*3-3]).paperlist # add the 4th X
 # print(paperout.paperlist) # just for testing (print paperlist)
-# paperout.refresh() # for testing below (print paperdict and paperlist)
+# paperout.refresh() # for testings below (print paperdict and paperlist)
 # print()
 # print(paperout.paperlist) # just for testing
 print(paperout.sprint(fill_right=True)) #print them all out
