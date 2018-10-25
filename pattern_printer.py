@@ -89,13 +89,14 @@ class Paper:
     def up(self):
         return self.edge(0, min)
 
-    def sprint(self, nochange=False, fill_right=False, right_min=0):
+    def sprint(self, nochange=False, fill_right=False, right_min=0, stay_in_list=False):
         if nochange:
             from copy import deepcopy
             papertemp = deepcopy(self)
             return papertemp.sprint(nochange=False,
                                     fill_right=fill_right,
                                     right_min=right_min)
+        was_editing_list = self.is_editing_list
         strout = ""
         # ADDRESS PROBLEM, A MATTER OF SAFTY
         position_now = self.initial_position.copy()
@@ -124,6 +125,8 @@ class Paper:
             position_now[1] += 1
         if self.end_with_sep:
             strout += self.line_sep_char
+        if stay_in_list and not was_editing_list:
+            self.switch2dict()
         return strout
 
     # extra functions
