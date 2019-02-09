@@ -34,7 +34,7 @@ class Paper:
                         'auto_clean_blank',
                         'use_default_settings']:
             if locals()[varname] is not None:
-                setattr(self, varname, locals()[varname]
+                setattr(self, varname, locals()[varname])
         # print(self, "initialized")
 
     def clear(self):
