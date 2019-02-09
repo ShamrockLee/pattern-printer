@@ -13,19 +13,28 @@ class Paper:
                  paperdict=None,
                  paperlist=None,
                  default_settings=None,
-                 blank_char=" ",
-                 line_sep_char="\n",
-                 end_with_sep=False,
+                 blank_char=None,
+                 line_sep_char=None,
+                 end_with_sep=None,
                  initial_position=None,
-                 is_editing_list=False,
-                 auto_clean_blank=True,
-                 use_default_settings=True):
+                 is_editing_list=None,
+                 auto_clean_blank=None,
+                 use_default_settings=None):
         self.paperdict = dict() if paperdict is None else paperdict
         self.paperlist = list() if paperlist is None else paperlist
         if default_settings is None:
             default_settings = self.use_default_settings
         if default_settings:
             self.default()
+        for varname in ['blank_char',
+                        'line_sep_char',
+                        'end_with_sep',
+                        'initial_position',
+                        'is_editing_list',
+                        'auto_clean_blank',
+                        'use_default_settings']:
+            if locals()[varname] is not None:
+                setattr(self, varname, locals()[varname]
         # print(self, "initialized")
 
     def clear(self):
