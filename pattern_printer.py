@@ -13,19 +13,29 @@ class Paper:
                  paperdict=None,
                  paperlist=None,
                  default_settings=None,
-                 blank_char=" ",
-                 line_sep_char="\n",
-                 end_with_sep=False,
+                 blank_char=None,
+                 line_sep_char=None,
+                 end_with_sep=None,
                  initial_position=None,
-                 is_editing_list=False,
-                 auto_clean_blank=True,
-                 use_default_settings=True):
-        self.paperdict = dict() if paperdict is None else paperdict
-        self.paperlist = list() if paperlist is None else paperlist
+                 is_editing_list=None,
+                 auto_clean_blank=None,
+                 use_default_settings=None):
         if default_settings is None:
             default_settings = self.use_default_settings
         if default_settings:
             self.default()
+        self.paperdict = dict() if paperdict is None else paperdict
+        self.paperlist = list() if paperlist is None else paperlist
+        for varname in ['blank_char',
+                        'line_sep_char',
+                        'end_with_sep',
+                        'initial_position',
+                        'is_editing_list',
+                        'auto_clean_blank',
+                        'use_default_settings']:
+            if locals()[varname] is not None:
+                setattr(self, varname, locals()[varname])
+        self.refresh()
         # print(self, "initialized")
 
     def clear(self):
@@ -147,9 +157,13 @@ def translated(self, *args, **kwargs):
     return paperout
 
 
-"""
-paper1 = Paper()
-paper1.paperdict[(4, 5)] = "3"
-#paper1.translate([-1, -3])
-print(paper1.sprint())
-"""
+if __name__ == "__main__":
+    paper1 = Paper()
+    paper1.paperdict[(4, 5)] = "3"
+    #paper1.translate([-1, -3])
+    print(paper1.sprint())
+    print("-----")
+    import example_abc
+    print("-----")
+    import example_xes
+    print("-----")
