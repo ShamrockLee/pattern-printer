@@ -20,12 +20,12 @@ class Paper:
                  is_editing_list=None,
                  auto_clean_blank=None,
                  use_default_settings=None):
-        self.paperdict = dict() if paperdict is None else paperdict
-        self.paperlist = list() if paperlist is None else paperlist
         if default_settings is None:
             default_settings = self.use_default_settings
         if default_settings:
             self.default()
+        self.paperdict = dict() if paperdict is None else paperdict
+        self.paperlist = list() if paperlist is None else paperlist
         for varname in ['blank_char',
                         'line_sep_char',
                         'end_with_sep',
@@ -35,6 +35,7 @@ class Paper:
                         'use_default_settings']:
             if locals()[varname] is not None:
                 setattr(self, varname, locals()[varname])
+        self.refresh()
         # print(self, "initialized")
 
     def clear(self):
