@@ -157,9 +157,13 @@ def translated(self, *args, **kwargs):
     return paperout
 
 
-"""
-paper1 = Paper()
-paper1.paperdict[(4, 5)] = "3"
-#paper1.translate([-1, -3])
-print(paper1.sprint())
-"""
+if __name__ == "__main__":
+    paper1 = Paper()
+    paper1.paperdict[(4, 5)] = "3"
+    #paper1.translate([-1, -3])
+    print(paper1.sprint())
+    print("-----")
+    import example_abc
+    print("-----")
+    import example_xes
+    print("-----")
