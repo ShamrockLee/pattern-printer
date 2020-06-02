@@ -20,5 +20,7 @@ For example,
 a c
  b
 ```
-## Contributing
- This repo was built when I tried git and GitHub for the first time, and this program was to help me print the ASCII patterns in a python course. Please tell me if there is anything wrong or improper here.
+
+It was my first little repo, created when I was trying git and GitHub for the first time.
+It was not something practical, but a little Python module to deal with the pattern-printing exercises in the programming course I had be enrolled. 
+Any advice is welcome, and please feel tell me if there is anything wrong or improper here.
