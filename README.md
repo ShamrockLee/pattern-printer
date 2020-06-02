@@ -21,4 +21,4 @@ a c
  b
 ```
 ## Contributing
- I am a Python learner and a newbie to git and GitHub. I wrote this program trying to deal with some character patterns. Any advice and contribution are more than welcome. Please tell me if there is anything wrong or improper here.
+ This repo was built when I tried git and GitHub for the first time, and this program was to help me print the ASCII patterns in a python course. Please tell me if there is anything wrong or improper here.
