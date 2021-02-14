@@ -1,54 +1,55 @@
+from copy import copy, deepcopy
+from dataclasses import dataclass
 class Paper:
-    blank_char = " "
-    line_sep_char = "\n"
-    end_with_sep = False
-    initial_position = [1, 1]
-    is_editing_list = False
-    auto_clean_blank = True
-    use_default_settings = True
-    paperdict = dict()
-    paperlist = list()
+    @dataclass
+    class Setting:
+        blank_char = " "
+        line_sep_char = "\n"
+        end_with_sep = False
+        initial_position = [1, 1]
+        is_editing_list = False
+        auto_clean_blank = True
+
+    _default_original = Setting()
+    
+    default = Setting()
+
+    def reset_default(cls):
+        cls.default = cls._default_original
 
     def __init__(self,
                  paperdict=None,
                  paperlist=None,
-                 default_settings=None,
                  blank_char=None,
                  line_sep_char=None,
                  end_with_sep=None,
                  initial_position=None,
                  is_editing_list=None,
                  auto_clean_blank=None,
-                 use_default_settings=None):
-        if default_settings is None:
-            default_settings = self.use_default_settings
-        if default_settings:
-            self.default()
+                 settings=None,
+                 use_original_default=False):
+        if use_original_default:
+            self.apply_setting(self._original_default)
+        else:
+            self.apply_setting()
+        for key_local, val_local in locals().items(): 
+            if key_local[0] != "_" and val_local is not None:
+                 setattr(self, key_local, val_local)
         self.paperdict = dict() if paperdict is None else paperdict
         self.paperlist = list() if paperlist is None else paperlist
-        for varname in ['blank_char',
-                        'line_sep_char',
-                        'end_with_sep',
-                        'initial_position',
-                        'is_editing_list',
-                        'auto_clean_blank',
-                        'use_default_settings']:
-            if locals()[varname] is not None:
-                setattr(self, varname, locals()[varname])
-        self.refresh()
+        # self.refresh()
         # print(self, "initialized")
+
+    def apply_setting(self, setting=None):
+        if setting is None:
+            setting = self.default
+        for attrname in setting.__dir__():
+            if attrname[0] != "_":
+                setattr(self, attrname, getattr(setting, attrname))
 
     def clear(self):
         self.paperlist.clear()
         self.paperdict.clear()
-
-    def default(self):
-        self.is_editing_list = False
-        self.auto_clean_blank = True
-        self.blank_char = " "
-        self.line_sep_char = "\n"
-        self.end_with_sep = False
-        self.initial_position = [1, 1]
 
     def sync2dict(self):
         self.paperdict.clear()
