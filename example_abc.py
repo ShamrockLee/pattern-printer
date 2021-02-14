@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 from pattern_printer import Paper
 paperout = Paper()
 paperout.switch2dict()

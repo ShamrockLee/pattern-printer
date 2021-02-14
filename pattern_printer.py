@@ -1,5 +1,8 @@
+#! /usr/bin/env python3
+
 from copy import copy, deepcopy
 from dataclasses import dataclass
+
 class Paper:
     @dataclass
     class Setting:
@@ -64,15 +67,16 @@ class Paper:
             self.sync2dict()
         self.is_editing_list = False
 
-    def sync2list(self):
+    def sync2list(self, nosort=False):
         self.paperlist = [
             [list(key), self.paperdict[key]]
             for key in self.paperdict.keys()]
-        self.paperlist.sort()
+        if not nosort:
+            self.paperlist.sort()
 
-    def switch2list(self, nosync=False, force=False):
+    def switch2list(self, nosort=False, nosync=False, force=False):
         if (not nosync) and ((not self.is_editing_list) or force):
-            self.sync2list()
+            self.sync2list(nosort=nosort)
         self.is_editing_list = True
 
     def refresh(self, editing_list = None):
@@ -86,7 +90,11 @@ class Paper:
             self.is_editing_list = editing_list
 
     def edge(self, horizontal, fmm):
-        return fmm(key[horizontal] for key in self.paperdict.keys())
+        generator_positions = (
+                (self.paperlist[i][0] for i in range(len(self.paperlist)))
+                if self.is_editing_list
+                else self.paperdict.keys())
+        return fmm((key[horizontal] for key in generator_positions), default=self.initial_position[horizontal])
 
     def right(self):  # used in the square option of sprint
         return self.edge(1, max)
@@ -100,7 +108,7 @@ class Paper:
     def up(self):
         return self.edge(0, min)
 
-    def sprint(self, nochange=False, fill_right=False, right_min=0, stay_in_list=False):
+    def sprint(self, nochange=False, fill_right=False, right_min=0, down_min=0, stay_in_list=False):
         if nochange:
             from copy import deepcopy
             papertemp = deepcopy(self)
@@ -114,11 +122,13 @@ class Paper:
         # self.refresh()
         # self.switch2dict()
         self.refresh(editing_list = True)
-        if fill_right:
+        if fill_right and right_min <= self_initial_position[0]:
             right_min = self.right()
         # for k in self.paperdict.keys():
         for point in self.paperlist:
             k, charnow = point
+            if k[0] < self.initial_position[0] or k[1] < self.initial_position[1]:
+                continue
             if k[0] > position_now[0]:
                 strout += (self.blank_char *
                            max(right_min - position_now[0], 0) +
@@ -134,6 +144,8 @@ class Paper:
             # strout += str(self.paperdict[k])
             strout += str(charnow)
             position_now[1] += 1
+        if position_now[0] < down_min:
+            strout += (self.blank_char*right_min + self.line_sep_char) * (down_min - position_now[0])
         if self.end_with_sep:
             strout += self.line_sep_char
         if stay_in_list and not was_editing_list:
@@ -143,12 +155,15 @@ class Paper:
     # extra functions
     def translate(self, vector, stay_in_list=False):
         was_editing_list = self.is_editing_list
-        self.switch2list()
-        self.paperlist = [
-            [[point[0][0]+vector[0], point[0][1]+vector[1]],
-             point[1]]
-            for point in self.paperlist]
-        if stay_in_list and not was_editing_list:
+        self.switch2list(nosort=True)
+        # self.paperlist = [
+        #     [[point[0][0]+vector[0], point[0][1]+vector[1]],
+        #      point[1]]
+        #     for point in self.paperlist]
+        for i in range(len(self.paperlist)):
+            self.paperlist[i][0][0] += vector[0]
+            self.paperlist[i][0][1] += vector[1]
+        if not stay_in_list and not was_editing_list:
             self.switch2dict()
 
 def translated(self, *args, **kwargs):
