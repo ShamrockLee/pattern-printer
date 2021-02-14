@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 from copy import copy, deepcopy
 from pattern_printer import Paper, translated
 
