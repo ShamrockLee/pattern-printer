@@ -3,6 +3,7 @@
 from copy import copy, deepcopy
 from dataclasses import dataclass
 
+
 class Paper:
     @dataclass
     class Setting:
@@ -14,30 +15,32 @@ class Paper:
         auto_clean_blank = True
 
     _default_original = Setting()
-    
+
     default = Setting()
 
     def reset_default(cls):
         cls.default = cls._default_original
 
-    def __init__(self,
-                 paperdict=None,
-                 paperlist=None,
-                 blank_char=None,
-                 line_sep_char=None,
-                 end_with_sep=None,
-                 initial_position=None,
-                 is_editing_list=None,
-                 auto_clean_blank=None,
-                 settings=None,
-                 use_original_default=False):
+    def __init__(
+        self,
+        paperdict=None,
+        paperlist=None,
+        blank_char=None,
+        line_sep_char=None,
+        end_with_sep=None,
+        initial_position=None,
+        is_editing_list=None,
+        auto_clean_blank=None,
+        settings=None,
+        use_original_default=False,
+    ):
         if use_original_default:
             self.apply_setting(self._original_default)
         else:
             self.apply_setting()
-        for key_local, val_local in locals().items(): 
+        for key_local, val_local in locals().items():
             if key_local[0] != "_" and val_local is not None:
-                 setattr(self, key_local, val_local)
+                setattr(self, key_local, val_local)
         self.paperdict = dict() if paperdict is None else paperdict
         self.paperlist = list() if paperlist is None else paperlist
         # self.refresh()
@@ -69,8 +72,8 @@ class Paper:
 
     def sync2list(self, nosort=False):
         self.paperlist = [
-            [list(key), self.paperdict[key]]
-            for key in self.paperdict.keys()]
+            [list(key), self.paperdict[key]] for key in self.paperdict.keys()
+        ]
         if not nosort:
             self.paperlist.sort()
 
@@ -79,7 +82,7 @@ class Paper:
             self.sync2list(nosort=nosort)
         self.is_editing_list = True
 
-    def refresh(self, editing_list = None):
+    def refresh(self, editing_list=None):
         if self.is_editing_list:
             self.switch2dict()
             self.switch2list()
@@ -91,10 +94,14 @@ class Paper:
 
     def edge(self, horizontal, fmm):
         generator_positions = (
-                (self.paperlist[i][0] for i in range(len(self.paperlist)))
-                if self.is_editing_list
-                else self.paperdict.keys())
-        return fmm((key[horizontal] for key in generator_positions), default=self.initial_position[horizontal])
+            (self.paperlist[i][0] for i in range(len(self.paperlist)))
+            if self.is_editing_list
+            else self.paperdict.keys()
+        )
+        return fmm(
+            (key[horizontal] for key in generator_positions),
+            default=self.initial_position[horizontal],
+        )
 
     def right(self):  # used in the square option of sprint
         return self.edge(1, max)
@@ -108,20 +115,28 @@ class Paper:
     def up(self):
         return self.edge(0, min)
 
-    def sprint(self, nochange=False, fill_right=False, right_min=0, down_min=0, stay_in_list=False):
+    def sprint(
+        self,
+        nochange=False,
+        fill_right=False,
+        right_min=0,
+        down_min=0,
+        stay_in_list=False,
+    ):
         if nochange:
             from copy import deepcopy
+
             papertemp = deepcopy(self)
-            return papertemp.sprint(nochange=False,
-                                    fill_right=fill_right,
-                                    right_min=right_min)
+            return papertemp.sprint(
+                nochange=False, fill_right=fill_right, right_min=right_min
+            )
         was_editing_list = self.is_editing_list
         strout = ""
         # ADDRESS PROBLEM, A MATTER OF SAFTY
         position_now = self.initial_position.copy()
         # self.refresh()
         # self.switch2dict()
-        self.refresh(editing_list = True)
+        self.refresh(editing_list=True)
         if fill_right and right_min <= self_initial_position[0]:
             right_min = self.right()
         # for k in self.paperdict.keys():
@@ -130,22 +145,25 @@ class Paper:
             if k[0] < self.initial_position[0] or k[1] < self.initial_position[1]:
                 continue
             if k[0] > position_now[0]:
-                strout += (self.blank_char *
-                           max(right_min - position_now[0], 0) +
-                           self.line_sep_char)
+                strout += (
+                    self.blank_char * max(right_min - position_now[0], 0)
+                    + self.line_sep_char
+                )
                 position_now[0] += 1
-                strout += ((self.blank_char*right_min +
-                            self.line_sep_char) *
-                           (k[0]-position_now[0]))
+                strout += (self.blank_char * right_min + self.line_sep_char) * (
+                    k[0] - position_now[0]
+                )
                 position_now = [k[0], self.initial_position[1]]
             if k[0] == position_now[0] and k[1] > position_now[1]:
-                strout += self.blank_char*(k[1]-position_now[1])
+                strout += self.blank_char * (k[1] - position_now[1])
                 position_now[1] = k[1]
             # strout += str(self.paperdict[k])
             strout += str(charnow)
             position_now[1] += 1
         if position_now[0] < down_min:
-            strout += (self.blank_char*right_min + self.line_sep_char) * (down_min - position_now[0])
+            strout += (self.blank_char * right_min + self.line_sep_char) * (
+                down_min - position_now[0]
+            )
         if self.end_with_sep:
             strout += self.line_sep_char
         if stay_in_list and not was_editing_list:
@@ -166,8 +184,10 @@ class Paper:
         if not stay_in_list and not was_editing_list:
             self.switch2dict()
 
+
 def translated(self, *args, **kwargs):
     from copy import deepcopy
+
     paperout = deepcopy(self)
     paperout.translate(*args, **kwargs)
     return paperout
@@ -176,10 +196,12 @@ def translated(self, *args, **kwargs):
 if __name__ == "__main__":
     paper1 = Paper()
     paper1.paperdict[(4, 5)] = "3"
-    #paper1.translate([-1, -3])
+    # paper1.translate([-1, -3])
     print(paper1.sprint())
     print("-----")
     import example_abc
+
     print("-----")
     import example_xes
+
     print("-----")

@@ -25,16 +25,21 @@ ratio_hwchar = 2
 nslices_angle = radius * 4
 is_clockwise = False
 angle_start = math.pi / 2
-get_position_circle = lambda angle: (int(round(-math.sin(angle) * radius / ratio_hwchar)), int(round(math.cos(angle) * radius)))
+get_position_circle = lambda angle: (
+    int(round(-math.sin(angle) * radius / ratio_hwchar)),
+    int(round(math.cos(angle) * radius)),
+)
 position_circle_start = get_position_circle(angle_start)
 for i in range(nslices_angle):
-    angle_current = angle_start + (2 * math.pi * i / nslices_angle) * ( -1 if is_clockwise else 1)
+    angle_current = angle_start + (2 * math.pi * i / nslices_angle) * (
+        -1 if is_clockwise else 1
+    )
     position_current = get_position_circle(angle_current)
     if position_current == position_circle_start and i:
         continue
     paper_circle.paperdict[position_current] = star_circle
 paper_circle.switch2list(nosort=True)
-paper_circle.translate([math.ceil(radius/ratio_hwchar) + 1, radius])
+paper_circle.translate([math.ceil(radius / ratio_hwchar) + 1, radius])
 
 for i in range(3):
     string_current = strings[i]
@@ -42,8 +47,10 @@ for i in range(3):
     paper_string_current.clear()
     paper_string_current.initial_position = [0, 0]
     paper_string_current.switch2list()
-    paper_string_current.paperlist = [ [[i, 2-i+j], star] for j, star in enumerate(string_current) ]
-    paper_string_current.translate([math.ceil(radius / ratio_hwchar) -nstrings + 1, 1])
+    paper_string_current.paperlist = [
+        [[i, 2 - i + j], star] for j, star in enumerate(string_current)
+    ]
+    paper_string_current.translate([math.ceil(radius / ratio_hwchar) - nstrings + 1, 1])
 
 paperlist_strings = sum((paper.paperlist for paper in paper_strings), start=[])
 paperlist_circle = paper_circle.paperlist
@@ -63,6 +70,7 @@ clear_command = "clear" if os.name == "posix" else "cls"
 # paper_presenting.paperlist = paperlist_strings + paperlist_circle
 # print(paper_presenting.sprint())
 
+
 def add_and_print(paper, paperlist_extra, dt):
     for charpoint in paperlist_extra:
         paper.switch2list()
@@ -73,6 +81,7 @@ def add_and_print(paper, paperlist_extra, dt):
         sys.stdout.write(paper.sprint(down_min=down_full))
         sys.stdout.flush()
         time.sleep(dt)
+
 
 add_and_print(paper_presenting, paperlist_strings, 0.1)
 add_and_print(paper_presenting, paperlist_circle, 0.05)

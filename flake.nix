@@ -30,7 +30,12 @@
         lib.pythonPackagesExtensions.default = import ./python-packages-extensions.nix;
       };
       perSystem =
-        { config, pkgs, system, ... }:
+        {
+          config,
+          pkgs,
+          system,
+          ...
+        }:
         let
           pythons = {
             inherit (pkgs)
@@ -41,16 +46,20 @@
               python313
               pypy3
               pypy39
-              pypy310;
+              pypy310
+              ;
           };
           pythonsOkay = lib.filterAttrs (
-            pythonName: pythonPackage: lib.all (
-              packageName: (builtins.tryEval pythonPackage.pkgs.${packageName}.drvPath).success
-            ) [ "setuptools" "wheel" "six" ]
+            pythonName: pythonPackage:
+            lib.all (packageName: (builtins.tryEval pythonPackage.pkgs.${packageName}.drvPath).success) [
+              "setuptools"
+              "wheel"
+              "six"
+            ]
           ) pythons;
           siblings = lib.mapAttrs' (
             pythonName: pythonPackage:
-          (lib.nameValuePair "pattern-printer_${pythonName}"
+            (lib.nameValuePair "pattern-printer_${pythonName}"
               (pythonPackage.override (previousArgs: {
                 packageOverrides =
                   final: prev:
