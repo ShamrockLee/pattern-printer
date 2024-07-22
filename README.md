@@ -16,7 +16,7 @@ For example,
 >>> paperout.switch_to_list()
 >>> paperout.paperlist
 [[[1, 1], 'a'], [[1, 3], 'c'], [[2, 2], 'b']]
->>> print(paperout.sprint())
+>>> print(paperout.sprint(), end='')
 a c
  b
 ```

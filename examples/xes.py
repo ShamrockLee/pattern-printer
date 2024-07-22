@@ -45,5 +45,5 @@ paperout.paperlist += translated(
 # paperout.refresh() # for testings below (print paperdict and paperlist)
 # print()
 # print(paperout.paperlist) # just for testing
-print(paperout.sprint(fill_right=True))  # print them all out
+print(paperout.sprint(fill_right=True), end="")  # print them all out
 # fill_right=True is additional, it is used to test the fill_right code.

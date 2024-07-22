@@ -9,4 +9,4 @@ paperout.paperdict[(1, 3)] = "c"
 paperout.paperdict
 paperout.switch_to_list()
 paperout.paperlist
-print(paperout.sprint())
+print(paperout.sprint(), end="")
