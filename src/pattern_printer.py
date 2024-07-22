@@ -1,94 +1,79 @@
 #! /usr/bin/env python3
 
-from copy import copy, deepcopy
-from dataclasses import dataclass
+from copy import deepcopy
+
+
+def _default_if_none(value, default):
+    return value if value is not None else default
+
+
+def reset_settings():
+    global ALWAYS_RSTRIP
+    ALWAYS_RSTRIP = True
+    global INIT_EDITING_LIST
+    INIT_EDITING_LIST = False
+    global INIT_POSITION
+    INIT_POSITION = [1, 1]
+    global SPACE_CHAR
+    SPACE_CHAR = " "
+
+
+reset_settings()
 
 
 class Paper:
-    @dataclass
-    class Setting:
-        blank_char = " "
-        line_sep_char = "\n"
-        end_with_sep = False
-        initial_position = [1, 1]
-        is_editing_list = False
-        auto_clean_blank = True
-
-    _default_original = Setting()
-
-    default = Setting()
-
-    def reset_default(cls):
-        cls.default = cls._default_original
-
     def __init__(
         self,
-        paperdict=None,
-        paperlist=None,
-        blank_char=None,
-        line_sep_char=None,
-        end_with_sep=None,
-        initial_position=None,
+        paperdict={},
+        paperlist=[],
+        always_rstrip=None,
+        init_position=None,
         is_editing_list=None,
-        auto_clean_blank=None,
-        settings=None,
-        use_original_default=False,
+        space_char=None,
     ):
-        if use_original_default:
-            self.apply_setting(self._original_default)
-        else:
-            self.apply_setting()
-        for key_local, val_local in locals().items():
-            if key_local[0] != "_" and val_local is not None:
-                setattr(self, key_local, val_local)
-        self.paperdict = dict() if paperdict is None else paperdict
-        self.paperlist = list() if paperlist is None else paperlist
-        # self.refresh()
-        # print(self, "initialized")
-
-    def apply_setting(self, setting=None):
-        if setting is None:
-            setting = self.default
-        for attrname in setting.__dir__():
-            if attrname[0] != "_":
-                setattr(self, attrname, getattr(setting, attrname))
+        self.paperdict = paperdict
+        self.paperlist = paperlist
+        self.always_rstrip = _default_if_none(always_rstrip, ALWAYS_RSTRIP)
+        self.init_position = _default_if_none(init_position, INIT_POSITION)
+        self.is_editing_list = _default_if_none(is_editing_list, INIT_EDITING_LIST)
+        self.space_char = _default_if_none(space_char, SPACE_CHAR)
 
     def clear(self):
         self.paperlist.clear()
         self.paperdict.clear()
 
-    def sync2dict(self):
+    def sync_to_dict(self):
         self.paperdict.clear()
         for charpoint in self.paperlist:
             self.paperdict[tuple(charpoint[0])] = str(charpoint[1])
-        if self.auto_clean_blank:
-            while self.blank_char in self.paperdict:
-                self.paperdict.pop(self.blank_char)
+        if self.always_rstrip:
+            while self.space_char in self.paperdict:
+                self.paperdict.pop(self.space_char)
 
-    def switch2dict(self, nosync=False, force=False):
+    def switch_to_dict(self, nosync=False, force=False):
         if (not nosync) and (self.is_editing_list or force):
-            self.sync2dict()
+            self.sync_to_dict()
         self.is_editing_list = False
 
-    def sync2list(self, nosort=False):
+    def sync_to_list(self, nosort=False):
         self.paperlist = [
             [list(key), self.paperdict[key]] for key in self.paperdict.keys()
         ]
         if not nosort:
             self.paperlist.sort()
 
-    def switch2list(self, nosort=False, nosync=False, force=False):
+    def switch_to_list(self, nosort=False, nosync=False, force=False):
         if (not nosync) and ((not self.is_editing_list) or force):
-            self.sync2list(nosort=nosort)
+            self.sync_to_list(nosort=nosort)
         self.is_editing_list = True
 
     def refresh(self, editing_list=None):
         if self.is_editing_list:
-            self.switch2dict()
-            self.switch2list()
+            self.switch_to_dict()
+            self.switch_to_list()
         else:
-            self.switch2list()
-            self.switch2dict()
+            self.switch_to_list()
+            self.switch_to_dict()
         if editing_list is not None:
             self.is_editing_list = editing_list
 
@@ -100,7 +85,7 @@ class Paper:
         )
         return fmm(
             (key[horizontal] for key in generator_positions),
-            default=self.initial_position[horizontal],
+            default=self.init_position[horizontal],
         )
 
     def right(self):  # used in the square option of sprint
@@ -122,6 +107,7 @@ class Paper:
         right_min=0,
         down_min=0,
         stay_in_list=False,
+        append_newline=True,
     ):
         if nochange:
             from copy import deepcopy
@@ -133,47 +119,44 @@ class Paper:
         was_editing_list = self.is_editing_list
         strout = ""
         # ADDRESS PROBLEM, A MATTER OF SAFTY
-        position_now = self.initial_position.copy()
+        position_now = self.init_position.copy()
         # self.refresh()
-        # self.switch2dict()
+        # self.switch_to_dict()
         self.refresh(editing_list=True)
-        if fill_right and right_min <= self_initial_position[0]:
+        if fill_right and right_min <= self.init_position[0]:
             right_min = self.right()
         # for k in self.paperdict.keys():
         for point in self.paperlist:
             k, charnow = point
-            if k[0] < self.initial_position[0] or k[1] < self.initial_position[1]:
+            if k[0] < self.init_position[0] or k[1] < self.init_position[1]:
                 continue
             if k[0] > position_now[0]:
-                strout += (
-                    self.blank_char * max(right_min - position_now[0], 0)
-                    + self.line_sep_char
-                )
+                strout += self.space_char * max(right_min - position_now[0], 0) + "\n"
                 position_now[0] += 1
-                strout += (self.blank_char * right_min + self.line_sep_char) * (
+                strout += (self.space_char * right_min + "\n") * (
                     k[0] - position_now[0]
                 )
-                position_now = [k[0], self.initial_position[1]]
+                position_now = [k[0], self.init_position[1]]
             if k[0] == position_now[0] and k[1] > position_now[1]:
-                strout += self.blank_char * (k[1] - position_now[1])
+                strout += self.space_char * (k[1] - position_now[1])
                 position_now[1] = k[1]
             # strout += str(self.paperdict[k])
             strout += str(charnow)
             position_now[1] += 1
         if position_now[0] < down_min:
-            strout += (self.blank_char * right_min + self.line_sep_char) * (
+            strout += (self.space_char * right_min + "\n") * (
                 down_min - position_now[0]
             )
-        if self.end_with_sep:
-            strout += self.line_sep_char
+        if append_newline:
+            strout += "\n"
         if stay_in_list and not was_editing_list:
-            self.switch2dict()
+            self.switch_to_dict()
         return strout
 
     # extra functions
     def translate(self, vector, stay_in_list=False):
         was_editing_list = self.is_editing_list
-        self.switch2list(nosort=True)
+        self.switch_to_list(nosort=True)
         # self.paperlist = [
         #     [[point[0][0]+vector[0], point[0][1]+vector[1]],
         #      point[1]]
@@ -182,26 +165,10 @@ class Paper:
             self.paperlist[i][0][0] += vector[0]
             self.paperlist[i][0][1] += vector[1]
         if not stay_in_list and not was_editing_list:
-            self.switch2dict()
+            self.switch_to_dict()
 
 
 def translated(self, *args, **kwargs):
-    from copy import deepcopy
-
     paperout = deepcopy(self)
     paperout.translate(*args, **kwargs)
     return paperout
-
-
-if __name__ == "__main__":
-    paper1 = Paper()
-    paper1.paperdict[(4, 5)] = "3"
-    # paper1.translate([-1, -3])
-    print(paper1.sprint())
-    print("-----")
-    import example_abc
-
-    print("-----")
-    import example_xes
-
-    print("-----")

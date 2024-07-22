@@ -17,18 +17,23 @@ paper_strings = [pattern_printer.Paper() for i in range(nstrings)]
 paper_circle = pattern_printer.Paper()
 radius = max(len(string) for string in strings) + 3
 # radius = int(math.ceil(radius * 0.75))
-paper_circle.initial_position = [0, 0]
+paper_circle.init_position = [0, 0]
 paper_circle.clear()
-paper_circle.switch2dict()
+paper_circle.switch_to_dict()
 star_circle = "*"
 ratio_hwchar = 2
 nslices_angle = radius * 4
 is_clockwise = False
 angle_start = math.pi / 2
-get_position_circle = lambda angle: (
-    int(round(-math.sin(angle) * radius / ratio_hwchar)),
-    int(round(math.cos(angle) * radius)),
-)
+
+
+def get_position_circle(angle):
+    return (
+        int(round(-math.sin(angle) * radius / ratio_hwchar)),
+        int(round(math.cos(angle) * radius)),
+    )
+
+
 position_circle_start = get_position_circle(angle_start)
 for i in range(nslices_angle):
     angle_current = angle_start + (2 * math.pi * i / nslices_angle) * (
@@ -38,15 +43,15 @@ for i in range(nslices_angle):
     if position_current == position_circle_start and i:
         continue
     paper_circle.paperdict[position_current] = star_circle
-paper_circle.switch2list(nosort=True)
+paper_circle.switch_to_list(nosort=True)
 paper_circle.translate([math.ceil(radius / ratio_hwchar) + 1, radius])
 
 for i in range(3):
     string_current = strings[i]
     paper_string_current = paper_strings[i]
     paper_string_current.clear()
-    paper_string_current.initial_position = [0, 0]
-    paper_string_current.switch2list()
+    paper_string_current.init_position = [0, 0]
+    paper_string_current.switch_to_list()
     paper_string_current.paperlist = [
         [[i, 2 - i + j], star] for j, star in enumerate(string_current)
     ]
@@ -60,9 +65,9 @@ down_full = max(paper.down() for paper in (paper_strings + [paper_circle]))
 # down_full = 15
 
 paper_presenting = pattern_printer.Paper()
-paper_presenting.initial_position = [0, 0]
+paper_presenting.init_position = [0, 0]
 paper_presenting.clear()
-paper_presenting.switch2list()
+paper_presenting.switch_to_list()
 
 to_clear_frame = False
 clear_command = "clear" if os.name == "posix" else "cls"
@@ -73,7 +78,7 @@ clear_command = "clear" if os.name == "posix" else "cls"
 
 def add_and_print(paper, paperlist_extra, dt):
     for charpoint in paperlist_extra:
-        paper.switch2list()
+        paper.switch_to_list()
         paper.paperlist.append(charpoint)
         paper.refresh()
         if to_clear_frame:
