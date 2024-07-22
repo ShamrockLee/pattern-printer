@@ -89,6 +89,7 @@
             packagesFrom = [ defaultSibling ];
           };
           treefmt.projectRootFile = ".git/config";
+          treefmt.programs.ruff.check = true;
           treefmt.programs.ruff.format = true;
           treefmt.programs.nixfmt.enable = true;
           treefmt.programs.nixfmt.package = inputs.nixfmt.packages.${system}.default;
