@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = [
     { name = "Yueh-Shun Li", email = "shamrocklee@posteo.net" },
 ]
-description = "Compatibility module of Python imp"
+description = "Print character patterns without counting spaces"
 readme = "README.md"
 requires-python = ">= 3.0"
 classifiers = [
