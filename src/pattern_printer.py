@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from copy import deepcopy
+from copy import copy, deepcopy
 
 
 def _default_if_none(value, default):
@@ -31,10 +31,11 @@ class Paper:
         is_editing_list=None,
         space_char=None,
     ):
-        self.paperdict = paperdict
-        self.paperlist = paperlist
+        # deepcopy prevents latter instances from referencing former instances.
+        self.paperdict = deepcopy(paperdict)
+        self.paperlist = deepcopy(paperlist)
         self.always_rstrip = _default_if_none(always_rstrip, ALWAYS_RSTRIP)
-        self.init_position = _default_if_none(init_position, INIT_POSITION)
+        self.init_position = _default_if_none(init_position, copy(INIT_POSITION))
         self.is_editing_list = _default_if_none(is_editing_list, INIT_EDITING_LIST)
         self.space_char = _default_if_none(space_char, SPACE_CHAR)
 
@@ -116,7 +117,7 @@ class Paper:
             )
         was_editing_list = self.is_editing_list
         strout = ""
-        position_now = self.init_position.copy()
+        position_now = copy(self.init_position)
         self.refresh(editing_list=True)
         if fill_right and right_min <= self.init_position[0]:
             right_min = self.right()
