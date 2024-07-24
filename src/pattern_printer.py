@@ -110,22 +110,16 @@ class Paper:
         append_newline=True,
     ):
         if nochange:
-            from copy import deepcopy
-
             papertemp = deepcopy(self)
             return papertemp.sprint(
                 nochange=False, fill_right=fill_right, right_min=right_min
             )
         was_editing_list = self.is_editing_list
         strout = ""
-        # ADDRESS PROBLEM, A MATTER OF SAFTY
         position_now = self.init_position.copy()
-        # self.refresh()
-        # self.switch_to_dict()
         self.refresh(editing_list=True)
         if fill_right and right_min <= self.init_position[0]:
             right_min = self.right()
-        # for k in self.paperdict.keys():
         for point in self.paperlist:
             k, charnow = point
             if k[0] < self.init_position[0] or k[1] < self.init_position[1]:
@@ -140,7 +134,6 @@ class Paper:
             if k[0] == position_now[0] and k[1] > position_now[1]:
                 strout += self.space_char * (k[1] - position_now[1])
                 position_now[1] = k[1]
-            # strout += str(self.paperdict[k])
             strout += str(charnow)
             position_now[1] += 1
         if position_now[0] < down_min:
