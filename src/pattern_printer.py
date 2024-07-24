@@ -164,6 +164,20 @@ class Paper:
         )
         self.init_position = position
 
+    def update_from_string(self, offset, string):
+        if self.is_editing_list:
+            self.paperlist += [
+                [[offset[0] + i, offset[1] + j], char]
+                for i, line in enumerate(string.split("\n"))
+                for j, char in enumerate(line)
+            ]
+        else:
+            self.paperdict.update(
+                [(offset[0] + i, offset[1] + j), char]
+                for i, line in enumerate(string.split("\n"))
+                for j, char in enumerate(line)
+            )
+
 
 def translated(self, *args, **kwargs):
     paperout = deepcopy(self)
