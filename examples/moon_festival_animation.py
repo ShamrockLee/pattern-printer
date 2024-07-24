@@ -10,15 +10,17 @@ import sys
 import os
 import math
 
-strings = ["Happy", "Moon", "Festival"]
-nstrings = len(strings)
-paper_strings = [pattern_printer.Paper() for i in range(nstrings)]
+pattern_printer.INIT_POSITION = [0, 0]
+
+paper_string = pattern_printer.Paper()
+paper_string.clear()
+paper_string.update_from_string((-2, 3), "Happy")
+paper_string.update_from_string((-1, 2), "Moon")
+paper_string.update_from_string((0, 1), "Festival")
 
 paper_circle = pattern_printer.Paper()
-radius = max(len(string) for string in strings) + 3
-# radius = int(math.ceil(radius * 0.75))
-paper_circle.init_position = [0, 0]
 paper_circle.clear()
+radius = 20
 paper_circle.switch_to_dict()
 star_circle = "*"
 ratio_hwchar = 2
@@ -26,67 +28,36 @@ nslices_angle = radius * 4
 is_clockwise = False
 angle_start = math.pi / 2
 
-
-def get_position_circle(angle):
-    return (
-        int(round(-math.sin(angle) * radius / ratio_hwchar)),
-        int(round(math.cos(angle) * radius)),
-    )
-
-
-position_circle_start = get_position_circle(angle_start)
 for i in range(nslices_angle):
-    angle_current = angle_start + (2 * math.pi * i / nslices_angle) * (
-        -1 if is_clockwise else 1
-    )
-    position_current = get_position_circle(angle_current)
-    if position_current == position_circle_start and i:
-        continue
-    paper_circle.paperdict[position_current] = star_circle
-paper_circle.switch_to_list(nosort=True)
-paper_circle.translate([math.ceil(radius / ratio_hwchar) + 1, radius])
+    angle = angle_start + math.pi * 2 * i / nslices_angle
+    paper_circle.paperdict[
+        (
+            int(round(-math.sin(angle) * radius / ratio_hwchar)),
+            int(round(math.cos(angle) * radius)),
+        )
+    ] = star_circle
 
-for i in range(3):
-    string_current = strings[i]
-    paper_string_current = paper_strings[i]
-    paper_string_current.clear()
-    paper_string_current.init_position = [0, 0]
-    paper_string_current.switch_to_list()
-    paper_string_current.paperlist = [
-        [[i, 2 - i + j], star] for j, star in enumerate(string_current)
-    ]
-    paper_string_current.translate([math.ceil(radius / ratio_hwchar) - nstrings + 1, 1])
+center_of_circle = [math.ceil(radius / ratio_hwchar) + 1, radius]
+paper_string.translate([center_of_circle[0], 0], stay_in_list=True)
+paper_circle.translate(center_of_circle, stay_in_list=True)
+down_full = paper_circle.down()
 
-paperlist_strings = sum((paper.paperlist for paper in paper_strings), start=[])
-paperlist_circle = paper_circle.paperlist
-
-print(paper_circle.down())
-down_full = max(paper.down() for paper in (paper_strings + [paper_circle]))
-# down_full = 15
-
-paper_presenting = pattern_printer.Paper()
-paper_presenting.init_position = [0, 0]
-paper_presenting.clear()
-paper_presenting.switch_to_list()
-
-to_clear_frame = False
+paper_presentation = pattern_printer.Paper(is_editing_list=True)
+paper_presentation.clear()
+to_clear_frame = True
 clear_command = "clear" if os.name == "posix" else "cls"
 
-# paper_presenting.paperlist = paperlist_strings + paperlist_circle
-# print(paper_presenting.sprint())
 
-
-def add_and_print(paper, paperlist_extra, dt):
+def add_and_print(paperlist_extra, dt):
+    paper_presentation.switch_to_list()
     for charpoint in paperlist_extra:
-        paper.switch_to_list()
-        paper.paperlist.append(charpoint)
-        paper.refresh()
+        paper_presentation.paperlist.append(charpoint)
         if to_clear_frame:
             os.system(clear_command)
-        sys.stdout.write(paper.sprint(down_min=down_full))
+        sys.stdout.write(paper_presentation.sprint(down_min=down_full))
         sys.stdout.flush()
         time.sleep(dt)
 
 
-add_and_print(paper_presenting, paperlist_strings, 0.1)
-add_and_print(paper_presenting, paperlist_circle, 0.05)
+add_and_print(paper_string.paperlist, 0.1)
+add_and_print(paper_circle.paperlist, 0.05)
