@@ -155,6 +155,15 @@ class Paper:
         if not stay_in_list and not was_editing_list:
             self.switch_to_dict()
 
+    def update_init_position(self, position, stay_in_list=False):
+        self.translate(
+            list(
+                map(lambda q_new, q_prev: q_new - q_prev), position, self.init_position
+            ),
+            stay_in_list,
+        )
+        self.init_position = position
+
 
 def translated(self, *args, **kwargs):
     paperout = deepcopy(self)
