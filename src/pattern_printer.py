@@ -146,14 +146,9 @@ class Paper:
             self.switch_to_dict()
         return strout
 
-    # extra functions
     def translate(self, vector, stay_in_list=False):
         was_editing_list = self.is_editing_list
         self.switch_to_list(nosort=True)
-        # self.paperlist = [
-        #     [[point[0][0]+vector[0], point[0][1]+vector[1]],
-        #      point[1]]
-        #     for point in self.paperlist]
         for i in range(len(self.paperlist)):
             self.paperlist[i][0][0] += vector[0]
             self.paperlist[i][0][1] += vector[1]
